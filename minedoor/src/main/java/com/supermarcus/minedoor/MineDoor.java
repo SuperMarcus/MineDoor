@@ -17,7 +17,6 @@ import java.net.InetSocketAddress;
 public class MineDoor {
     public static void main(String args[]){
         try{
-            LogManager.getLogger().info("Loading...");
             new MineDoor(args);
         }catch (Throwable e){
             LogManager.getLogger().fatal("An uncaught exception has been cached. MineDoor had just stop to protect your server.", e);
