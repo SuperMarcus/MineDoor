@@ -1,0 +1,10 @@
+MineDoor.iml
+.idea
+.idea/*
+.DS_Store
+
+server.properties
+servers.txt
+
+target
+target/*
