@@ -4,11 +4,10 @@ jdk:
   - oraclejdk8
 
 before_script:
-  - mkdir MineDoor
-  - mv * MineDoor > /dev/null 2>&1
-  - cp MineDoor/build.sh build.sh
+  - cp build.sh ../build.sh
 
 script:
+  - cd ..
   - jdk_switcher use oraclejdk8
   - bash ./build.sh -n
 
