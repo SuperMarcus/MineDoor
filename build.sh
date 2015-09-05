@@ -6,6 +6,17 @@ DIR="$(pwd)"
 date > "$DIR/install.log" 2>&1
 uname -a >> "$DIR/install.log" 2>&1
 
+while getopts "n" OPTION 2> /dev/null; do
+	case ${OPTION} in
+		n)
+			NO_CHECKOUT="yes"
+			;;
+		\?)
+			break
+			;;
+	esac
+done
+
 echo "[*] Checking dependecies..."
 
 type mvn >> "$DIR/install.log" 2>&1 || { echo >&2 "[!] Please install \"mvn\""; read -p "Press [Enter] to continue..."; exit 1; }
@@ -24,11 +35,19 @@ else
 	fi
 fi
 
-echo "[*] Downloading latest git checkout..."
+if [ "$NO_CHECKOUT" == "yes" ]; then
+    echo "[*] Skip checkout from git..."
+else
+	echo "[*] Downloading latest git checkout..."
+    git clone --recursive "https://github.com/SuperMarcus/MineDoor.git" >> "$DIR/install.log" 2>&1
+fi
 
-git clone --recursive "https://github.com/SuperMarcus/MineDoor.git" >> "$DIR/install.log" 2>&1
-
-cd MineDoor
+if [ -f ./MineDoor ]; then
+    cd MineDoor
+else
+    echo "[!] No valid checkout found. Please check the \"install.log\" file."
+    exit 1
+fi
 
 echo "[*] Compiling..."
 
@@ -52,4 +71,12 @@ echo "[*] Cleaning..."
 
 rm -rf MineDoor
 
-echo "[*] Done! Run \"./start.sh\" to start MineDoor."
+ERRORS="$(cat install.log | grep ERROR)"
+
+if [ "$ERRORS" == "" ]; then
+    echo "[*] Done! Run \"./start.sh\" to start MineDoor."
+    exit 0
+else
+    echo "[!] No valid checkout found. Please check the \"install.log\" file."
+    exit 1
+fi
