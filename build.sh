@@ -94,12 +94,6 @@ echo "[*] Cleaning..."
 
 rm -rf MineDoor
 
-ERRORS="$(cat install.log | grep ERROR)"
-
-echo "[*] Done! Run \"./start.sh\" to start MineDoor."
-
-exit 0
-
 if [ "$ERRORS" == "" ]; then
     echo "[*] Done! Run \"./start.sh\" to start MineDoor."
     exit 0
