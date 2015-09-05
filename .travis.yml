@@ -5,7 +5,7 @@ jdk:
 
 script:
   - jdk_switcher use oraclejdk8
-  - ./build.sh -n
+  - bash ./build.sh -n
 
 after_script:
   - cat install.log
