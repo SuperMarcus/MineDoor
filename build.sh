@@ -6,11 +6,14 @@ DIR="$(pwd)"
 date > "$DIR/install.log" 2>&1
 uname -a >> "$DIR/install.log" 2>&1
 
-while getopts "n" OPTION 2> /dev/null; do
+while getopts "nt" OPTION 2> /dev/null; do
 	case ${OPTION} in
 		n)
 			NO_CHECKOUT="yes"
 			;;
+		t)
+		    TRAVIS_BUILD="yes"
+		    ;;
 		\?)
 			break
 			;;
@@ -42,7 +45,14 @@ else
     git clone --recursive "https://github.com/SuperMarcus/MineDoor.git" >> "$DIR/install.log" 2>&1
 fi
 
-if [ -f ./MineDoor ]; then
+if [ "$TRAVIS_BUILD" == "yes" ]; then
+    if [ -f ./pom.xml ]; then
+        echo "[*] Building in travis..."
+    else
+        echo "[!] No valid travis checkout found. Please check the \"install.log\" file."
+        exit 1
+    fi
+elif [ -f ./MineDoor ]; then
     cd MineDoor
 else
     echo "[!] No valid checkout found. Please check the \"install.log\" file."
@@ -56,6 +66,19 @@ mvn package >> "$DIR/install.log" 2>&1
 echo "[*] Copying dependencies..."
 
 mvn dependency:copy-dependencies >> "$DIR/install.log" 2>&1
+
+ERRORS="$(cat install.log | grep ERROR)"
+
+if [ "$TRAVIS_BUILD" == "yes" ]; then
+    if [ "$ERRORS" == "" ]; then
+        echo "[*] Finished travis build."
+        exit 0
+    else
+        echo "[!] Some errors triggered when compiling. Build failing"
+        echo "$ERRORS"
+        exit 1
+    fi
+fi
 
 echo "[*] Copying files..."
 
@@ -73,10 +96,15 @@ rm -rf MineDoor
 
 ERRORS="$(cat install.log | grep ERROR)"
 
+echo "[*] Done! Run \"./start.sh\" to start MineDoor."
+
+exit 0
+
 if [ "$ERRORS" == "" ]; then
     echo "[*] Done! Run \"./start.sh\" to start MineDoor."
     exit 0
 else
-    echo "[!] No valid checkout found. Please check the \"install.log\" file."
+    echo "[!] Some errors triggered when compiling. Please check the \"install.log\" file."
+    echo "$ERRORS"
     exit 1
 fi
