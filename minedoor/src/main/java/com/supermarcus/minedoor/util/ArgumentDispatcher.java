@@ -14,6 +14,8 @@ public class ArgumentDispatcher {
 
     private File serverList = new File("servers.txt");
 
+    private boolean noNewFile = false;
+
     public ArgumentDispatcher(String[] arguments){
         for (int argIndex = 0; argIndex < arguments.length; ++argIndex) {
             try {
@@ -58,6 +60,8 @@ public class ArgumentDispatcher {
             }else{
                 throw new FileAlreadyExistsException(list.getAbsolutePath(), "", "The server list pointed in arguments already exists and is a directory");
             }
+        }else if(key.toLowerCase().equals("--no-newfile")){
+            this.noNewFile = true;
         }
         return 0;
     }
@@ -72,5 +76,9 @@ public class ArgumentDispatcher {
 
     public File getServerList() {
         return serverList;
+    }
+
+    public boolean doNotCreateFile() {
+        return noNewFile;
     }
 }

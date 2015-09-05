@@ -7,3 +7,15 @@ servers.txt
 
 target
 target/*
+
+build
+build/*
+
+jraklib/target
+jraklib/target/*
+
+minedoor/target
+minedoor/target/*
+
+minedoor-loader/target
+minedoor-loader/target/*

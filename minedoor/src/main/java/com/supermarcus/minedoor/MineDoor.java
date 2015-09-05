@@ -12,6 +12,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.*;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
 public class MineDoor {
@@ -50,6 +51,9 @@ public class MineDoor {
         File servers = this.getArguments().getServerList();
         try {
             if(!servers.exists()){
+                if(this.getArguments().doNotCreateFile()){
+                    throw new IOException("No new file creation");
+                }
                 //noinspection ResultOfMethodCallIgnored
                 servers.createNewFile();
                 PrintWriter writer = new PrintWriter(new FileWriter(servers));

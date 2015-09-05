@@ -28,5 +28,48 @@
     <modules>
         <module>jraklib</module>
         <module>minedoor</module>
+        <module>minedoor-loader</module>
     </modules>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>./build/lib</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+                <configuration>
+                    <outputDirectory>./build/lib</outputDirectory>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <outputDirectory>./build/lib</outputDirectory>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>18.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>2.3</version>
+        </dependency>
+    </dependencies>
 </project>

@@ -33,6 +33,9 @@ public class ServerProperties extends Properties {
             throw new FileAlreadyExistsException(store.getAbsolutePath(), "", "The config file already exists and is a directory");
         }else{
             if(!store.exists()){
+                if(this.dispatcher.doNotCreateFile()){
+                    throw new IOException("No new file creation");
+                }
                 //noinspection ResultOfMethodCallIgnored
                 store.createNewFile();
             }

@@ -1,34 +1,15 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-
-    <artifactId>jraklib</artifactId>
-    <version>1.0-SNAPSHOT</version>
-    <packaging>jar</packaging>
-
     <parent>
-        <groupId>com.supermarcus</groupId>
         <artifactId>minedoor-project</artifactId>
+        <groupId>com.supermarcus</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
+    <modelVersion>4.0.0</modelVersion>
 
-    <name>JRakLib</name>
-    <url>https://github.com/SuperMarcus/JRakLib</url>
-
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-        <maven.compiler.compilerVersion>1.8</maven.compiler.compilerVersion>
-    </properties>
-
-    <licenses>
-        <license>
-            <name>GNU General Public License Version 3</name>
-            <url>http://www.gnu.org/licenses/gpl-3.0.html</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
+    <artifactId>minedoor-loader</artifactId>
 
     <build>
         <plugins>
@@ -53,7 +34,13 @@
             <plugin>
                 <artifactId>maven-jar-plugin</artifactId>
                 <configuration>
-                    <outputDirectory>../build/lib</outputDirectory>
+                    <outputDirectory>../build</outputDirectory>
+                    <archive>
+                        <index>true</index>
+                        <manifest>
+                            <mainClass>com.supermarcus.minedoor.loader.MinedoorLoader</mainClass>
+                        </manifest>
+                    </archive>
                 </configuration>
             </plugin>
         </plugins>
