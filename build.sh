@@ -63,7 +63,7 @@ echo "[*] Compiling..."
 
 mvn package >> "$DIR/install.log" 2>&1
 
-ERRORS="$(cat install.log | grep ERROR)"
+ERRORS="$(cat "$DIR/install.log" | grep ERROR)"
 
 echo "[*] Copying dependencies..."
 
