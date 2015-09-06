@@ -88,12 +88,16 @@ public class ServerMonitor {
             while(getSocket() != null && getSocket().isBound()){
                 final long millis = System.currentTimeMillis();
                 getLogger().info("Starting to refresh servers...");
+                final int[] playerCounter = new int[]{0, 0};
                 getMonitoringServers().forEach(new BiConsumer<InetSocketAddress, TransferServer>() {
                     @Override
                     public void accept(InetSocketAddress address, TransferServer target) {
                         target.onUpdate(millis);
+                        playerCounter[0] += target.getPlayerCount();
+                        playerCounter[1] += target.getMaxPlayer();
                     }
                 });
+                mineDoor.getInterface().updatePlayerCounter(playerCounter);
                 try {
                     Thread.sleep(PING_FREQUENCY);
                 } catch (InterruptedException ignore) {}

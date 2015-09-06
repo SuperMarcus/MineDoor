@@ -63,11 +63,11 @@ echo "[*] Compiling..."
 
 mvn package >> "$DIR/install.log" 2>&1
 
+ERRORS="$(cat install.log | grep ERROR)"
+
 echo "[*] Copying dependencies..."
 
 mvn dependency:copy-dependencies >> "$DIR/install.log" 2>&1
-
-ERRORS="$(cat install.log | grep ERROR)"
 
 if [ "$TRAVIS_BUILD" == "yes" ]; then
     if [ "$ERRORS" == "" ]; then

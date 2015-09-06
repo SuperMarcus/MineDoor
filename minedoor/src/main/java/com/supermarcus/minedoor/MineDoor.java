@@ -1,6 +1,7 @@
 package com.supermarcus.minedoor;
 
 import com.supermarcus.jraklib.Session;
+import com.supermarcus.jraklib.lang.BinaryConvertible;
 import com.supermarcus.jraklib.network.SendPriority;
 import com.supermarcus.jraklib.protocol.raklib.EncapsulatedPacket;
 import com.supermarcus.minedoor.network.MinecraftInterface;
@@ -12,7 +13,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.*;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
 public class MineDoor {
@@ -22,6 +22,16 @@ public class MineDoor {
         }catch (Throwable e){
             LogManager.getLogger().fatal("An uncaught exception has been cached. MineDoor had just stop to protect your server.", e);
         }
+    }
+
+    public static void sendEncapsulated(Session session, BinaryConvertible packet){
+        EncapsulatedPacket reply = new EncapsulatedPacket();
+        reply.setBuffer(packet);
+        reply.setReliability(EncapsulatedPacket.RELIABLE_ORDERED);
+        reply.setOrderIndex(0);
+        reply.setOrderChannel(1);
+
+        session.getReliableManager().addEncapsulatedToQueue(reply, SendPriority.IMMEDIATE);
     }
 
     private ArgumentDispatcher arguments;
@@ -40,6 +50,16 @@ public class MineDoor {
         this.arguments = new ArgumentDispatcher(args);
         this.serverProperties = new ServerProperties();
         this.getProperties().loadArgumentDispatcher(this.getArguments());
+
+        try{
+            if(this.getArguments().getPropertiesFile().exists()){
+                FileReader reader = new FileReader(this.getArguments().getPropertiesFile());
+                this.getProperties().load(reader);
+                reader.close();
+            }
+        }catch (IOException e){
+            this.getLogger().warn("Unable to load configuration", e);
+        }
 
         try {
             this.getProperties().save();
@@ -116,13 +136,7 @@ public class MineDoor {
         StrangePacket packet = new StrangePacket();
         packet.setDestination(address);
 
-        EncapsulatedPacket reply = new EncapsulatedPacket();
-        reply.setBuffer(packet);
-        reply.setReliability(EncapsulatedPacket.RELIABLE_ORDERED);
-        reply.setOrderIndex(0);
-        reply.setOrderChannel(1);
-
-        session.getReliableManager().addEncapsulatedToQueue(reply, SendPriority.IMMEDIATE);
+        MineDoor.sendEncapsulated(session, packet);
     }
 
     public RakLibPacketHandler getPacketHandler() {

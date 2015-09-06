@@ -17,6 +17,7 @@ import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Objects;
+import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.locks.ReentrantLock;
@@ -47,13 +48,21 @@ public class SessionManager extends Thread {
 
     private SessionMap map = new SessionMap();
 
-    private long serverId = 1L;
+    private long serverId = new Random(System.currentTimeMillis()).nextLong();
 
     private boolean portChecking = false;
 
     private NetworkManager networkManager = new NetworkManager();
 
-    volatile private String serverName = "MCPE;Minecraft Server;27;0.11.0;0;60";
+    volatile private String displayName = "Minecraft Server";
+
+    volatile private int peProtocol = 27;
+
+    volatile private String minecraftNetworkVersion = "0.11.0";
+
+    volatile private int playerOnline = 0;
+
+    volatile private int maxPlayer = 60;
 
     public SessionManager(){
         this.setName("RakLib - Main Thread");
@@ -107,12 +116,18 @@ public class SessionManager extends Thread {
         this.serverId = id;
     }
 
+    @Deprecated
     public void setServerName(String name){
-        this.serverName = name;
+
     }
 
-    public String getServerName(){
-        return this.serverName;
+    public String getMinecraftServerProtocolNameString(){
+        return "MCPE;" +
+                this.getDisplayName().replaceAll(";", "\\;") + ";" +
+                this.getMinecraftProtocol() + ";" +
+                this.getMinecraftNetworkVersion() + ";" +
+                this.getPlayerOnline() + ";" +
+                this.getMaxPlayer();
     }
 
     public long getServerId(){
@@ -277,6 +292,46 @@ public class SessionManager extends Thread {
 
     public NetworkManager getNetworkManager() {
         return networkManager;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String name) {
+        this.displayName = name;
+    }
+
+    public int getMinecraftProtocol() {
+        return peProtocol;
+    }
+
+    public void setMinecraftProtocol(int peProtocol) {
+        this.peProtocol = peProtocol;
+    }
+
+    public String getMinecraftNetworkVersion() {
+        return minecraftNetworkVersion;
+    }
+
+    public void setMinecraftNetworkVersion(String minecraftNetworkVersion) {
+        this.minecraftNetworkVersion = minecraftNetworkVersion;
+    }
+
+    public int getPlayerOnline() {
+        return playerOnline;
+    }
+
+    public void setPlayerOnline(int playerOnline) {
+        this.playerOnline = playerOnline;
+    }
+
+    public int getMaxPlayer() {
+        return maxPlayer;
+    }
+
+    public void setMaxPlayer(int maxPlayer) {
+        this.maxPlayer = maxPlayer;
     }
 
     public class SessionMap extends ConcurrentHashMap<InetSocketAddress, Session> {

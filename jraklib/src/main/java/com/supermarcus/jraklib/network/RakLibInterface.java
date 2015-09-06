@@ -93,7 +93,7 @@ public class RakLibInterface extends Thread{
                     wrappedPacket.decode();
                     if(identifier == PacketInfo.UNCONNECTED_PING){//No need to pass to a session
                         UNCONNECTED_PONG pong = new UNCONNECTED_PONG();
-                        pong.setServerName(getSessionManager().getServerName());
+                        pong.setServerName(getSessionManager().getMinecraftServerProtocolNameString());
                         pong.setServerID(getSessionManager().getServerId());
                         pong.setPingID(((UNCONNECTED_PING) wrappedPacket).getPingID());
                         pong.encode();

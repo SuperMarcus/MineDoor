@@ -17,10 +17,21 @@ public class ServerProperties extends Properties {
     public void loadArgumentDispatcher(ArgumentDispatcher dispatcher){
         this.dispatcher = dispatcher;
         this.putAll(dispatcher.getOverrideProperties());
+        if(!this.dispatcher.getPropertiesFile().exists()){
+            this.putAll(DefaultProperties.getDefault());
+        }
     }
 
     public long getUpdateFrequency(){
         return Math.max(1, Long.parseLong(this.getProperty("monitor.update-frequency")));
+    }
+
+    public int getMaxPlayers(){
+        return this.getProperty("server.maximum-people").toLowerCase().equals("auto") ? -1 : Math.max(1, Integer.parseInt(this.getProperty("server.maximum-people")));
+    }
+
+    public String getServerName(){
+        return this.getProperty("server.name");
     }
 
     public InetSocketAddress getInterfaceAddress(){
