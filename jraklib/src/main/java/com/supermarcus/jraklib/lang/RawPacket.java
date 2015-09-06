@@ -1,5 +1,6 @@
 package com.supermarcus.jraklib.lang;
 
+import com.supermarcus.jraklib.network.RakLibInterface;
 import com.supermarcus.jraklib.network.ReceivedPacket;
 
 import java.net.InetSocketAddress;
@@ -9,13 +10,16 @@ public class RawPacket {
 
     private InetSocketAddress address;
 
-    public RawPacket(ReceivedPacket packet){
-        this(packet.getRawData(), packet.getSendAddress());
+    private RakLibInterface raklib;
+
+    public RawPacket(ReceivedPacket packet, RakLibInterface raklib){
+        this(packet.getRawData(), packet.getSendAddress(), raklib);
     }
 
-    public RawPacket(byte[] data, InetSocketAddress target) {
+    public RawPacket(byte[] data, InetSocketAddress target, RakLibInterface raklib) {
         this.data = data;
         this.address = target;
+        this.raklib = raklib;
     }
 
     public InetSocketAddress getAddress(){
@@ -24,5 +28,9 @@ public class RawPacket {
 
     public byte[] getData(){
         return this.data;
+    }
+
+    public RakLibInterface getInterface() {
+        return raklib;
     }
 }

@@ -6,6 +6,7 @@ import com.supermarcus.jraklib.lang.exceptions.InterfaceOutOfPoolSizeException;
 import com.supermarcus.jraklib.lang.message.RakLibMessage;
 import com.supermarcus.jraklib.lang.message.major.MainThreadExceptionMessage;
 import com.supermarcus.jraklib.lang.message.major.UncaughtMainThreadExceptionMessage;
+import com.supermarcus.jraklib.network.NetworkManager;
 import com.supermarcus.jraklib.network.RakLibInterface;
 import com.supermarcus.jraklib.lang.RawPacket;
 import com.supermarcus.jraklib.network.SendPriority;
@@ -50,6 +51,8 @@ public class SessionManager extends Thread {
 
     private boolean portChecking = false;
 
+    private NetworkManager networkManager = new NetworkManager();
+
     volatile private String serverName = "MCPE;Minecraft Server;27;0.11.0;0;60";
 
     public SessionManager(){
@@ -64,8 +67,13 @@ public class SessionManager extends Thread {
     }
 
     public void run(){
+        long ticks = 0;
         while(!this.isShutdown()){
             try{
+                ++ticks;
+                if((ticks % 50) == 0){
+                    this.getNetworkManager().doUpdate(System.currentTimeMillis());
+                }
                 this.processMessages();
                 this.processRawPacket();
                 this.processACKNotification();
@@ -93,6 +101,10 @@ public class SessionManager extends Thread {
 
     public SessionMap getSessionMap(){
         return this.map;
+    }
+
+    public void setServerID(long id){
+        this.serverId = id;
     }
 
     public void setServerName(String name){
@@ -261,6 +273,10 @@ public class SessionManager extends Thread {
 
     public void setPortChecking(boolean portChecking) {
         this.portChecking = portChecking;
+    }
+
+    public NetworkManager getNetworkManager() {
+        return networkManager;
     }
 
     public class SessionMap extends ConcurrentHashMap<InetSocketAddress, Session> {

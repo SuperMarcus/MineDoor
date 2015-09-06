@@ -5,10 +5,7 @@ import com.supermarcus.jraklib.protocol.Packet;
 
 import java.io.IOException;
 import java.math.BigInteger;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.SocketAddress;
-import java.net.SocketException;
+import java.net.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.PriorityBlockingQueue;
 
@@ -16,11 +13,13 @@ import java.util.concurrent.PriorityBlockingQueue;
  * UDP Socket for Minecraft: Pocket Edition network protocol
  */
 public class ProtocolSocket extends DatagramSocket {
+    private ChildNetworkManager manager;
 
     private SocketSendReceiveThread thread = new SocketSendReceiveThread();
 
-    public ProtocolSocket(SocketAddress bindAddress) throws SocketException {
+    public ProtocolSocket(SocketAddress bindAddress, ChildNetworkManager networkManager) throws SocketException {
         super(bindAddress);
+        this.manager = networkManager;
         this.setSendBufferSize(Packet.MAX_SIZE);
         this.setReceiveBufferSize(Packet.MAX_SIZE);
         this.thread.start();
@@ -81,6 +80,7 @@ public class ProtocolSocket extends DatagramSocket {
      */
     private void writePacket(DatagramPacket packet) throws IOException {
         this.send(packet);
+        this.manager.onSocketSend(packet.getLength());
     }
 
     public boolean isAlive(){
@@ -117,7 +117,8 @@ public class ProtocolSocket extends DatagramSocket {
                 try{
                     DatagramPacket dPacket = new DatagramPacket(new byte[Packet.MAX_SIZE], Packet.MAX_SIZE);
                     ProtocolSocket.this.receive(dPacket);
-                    if(dPacket.getLength() > 0){
+                    if((dPacket.getLength() > 0) && (!ProtocolSocket.this.manager.isAddressBlocked(dPacket.getAddress()))){
+                        manager.onSocketRead(dPacket.getLength(), (InetSocketAddress) dPacket.getSocketAddress());
                         this.receiveBuffer.add(new ReceivedPacket(dPacket));
                     }
                 }catch (Exception ignore){}
