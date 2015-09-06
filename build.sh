@@ -52,7 +52,7 @@ if [ "$TRAVIS_BUILD" == "yes" ]; then
         echo "[!] No valid travis checkout found. Please check the \"install.log\" file."
         exit 1
     fi
-elif [ -f ./MineDoor ]; then
+elif [ -d ./MineDoor ]; then
     cd MineDoor
 else
     echo "[!] No valid checkout found. Please check the \"install.log\" file."
