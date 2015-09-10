@@ -6,14 +6,18 @@ DIR="$(pwd)"
 date > "$DIR/install.log" 2>&1
 uname -a >> "$DIR/install.log" 2>&1
 
-while getopts "nt" OPTION 2> /dev/null; do
+while getopts "ntl" OPTION 2> /dev/null; do
 	case ${OPTION} in
 		n)
 			NO_CHECKOUT="yes"
 			;;
 		t)
-		    TRAVIS_BUILD="yes"
+		    TEST_BUILD="yes"
+		    NO_CHECKOUT="yes"
 		    ;;
+		l)
+            REMOVE_INSTALL_LOG="yes"
+        	;;
 		\?)
 			break
 			;;
@@ -45,7 +49,7 @@ else
     git clone --recursive "https://github.com/SuperMarcus/MineDoor.git" >> "$DIR/install.log" 2>&1
 fi
 
-if [ "$TRAVIS_BUILD" == "yes" ]; then
+if [ "$TEST_BUILD" == "yes" ]; then
     if [ -f ./pom.xml ]; then
         echo "[*] Building in travis..."
     else
@@ -69,9 +73,14 @@ echo "[*] Copying dependencies..."
 
 mvn dependency:copy-dependencies >> "$DIR/install.log" 2>&1
 
-if [ "$TRAVIS_BUILD" == "yes" ]; then
+if [ "$TEST_BUILD" == "yes" ]; then
     if [ "$ERRORS" == "" ]; then
-        echo "[*] Finished travis build."
+        echo "[*] Cleaning..."
+        mvn clean >> "$DIR/install.log" 2>&1
+        if [ "$REMOVE_INSTALL_LOG" == "yes" ]; then
+            rm -f "$DIR/install.log"
+        fi
+        echo "[*] Finished test build."
         exit 0
     else
         echo "[!] Some errors triggered when compiling. Build failing"
@@ -96,6 +105,9 @@ rm -rf MineDoor
 
 if [ "$ERRORS" == "" ]; then
     echo "[*] Done! Run \"./start.sh\" to start MineDoor."
+    if [ "$REMOVE_INSTALL_LOG" == "yes" ]; then
+        rm -f "$DIR/install.log"
+    fi
     exit 0
 else
     echo "[!] Some errors triggered when compiling. Please check the \"install.log\" file."
